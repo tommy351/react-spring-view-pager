@@ -2,12 +2,20 @@
   "name": "react-spring-view-pager",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "dist/cjs",
+  "module": "dist/esm",
+  "esnext": "dist/esnext",
+  "types": "dist/types",
   "homepage": "https://github.com/tommy351/react-spring-view-pager",
   "scripts": {
     "storybook": "start-storybook",
     "build-storybook": "build-storybook",
-    "lint": "eslint . --ext .js,.ts,.tsx"
+    "lint": "eslint . --ext .js,.ts,.tsx",
+    "build": "npm-run-all build:*",
+    "build:esm": "tsc -p src --outDir dist/esm -m es2015",
+    "build:cjs": "tsc -p src --outDir dist/cjs -m commonjs",
+    "build:esnext": "tsc -p src --outDir dist/esnext -m esnext -t esnext",
+    "build:types": "tsc -p src --outDir dist/types -d --declarationMap --emitDeclarationOnly"
   },
   "repository": {
     "type": "git",
@@ -21,17 +29,21 @@
     }
   },
   "lint-staged": {
-    "*.ts": [
+    "*.{js,ts,tsx}": [
       "eslint . --ext .js,.ts,.tsx --fix",
       "git add"
     ]
   },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "bezier-easing": "^2.1.0",
     "lodash.clamp": "^4.0.3",
     "react-spring": "^8.0.27",
     "react-use-gesture": "^6.0.14",
-    "react-use-measure": "^1.0.4"
+    "react-use-measure": "^1.0.4",
+    "tslib": "^1.10.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",
@@ -39,6 +51,7 @@
     "@storybook/react": "^5.2.5",
     "@storybook/theming": "^5.2.5",
     "@types/lodash.clamp": "^4.0.6",
+    "@types/react": "^16.9.11",
     "@typescript-eslint/eslint-plugin": "^2.3.1",
     "@typescript-eslint/parser": "^2.3.1",
     "babel-loader": "^8.0.6",
@@ -48,11 +61,15 @@
     "eslint-plugin-react": "^7.16.0",
     "husky": "^3.0.9",
     "lint-staged": "^9.4.2",
+    "npm-run-all": "^4.1.5",
     "prettier": "^1.18.2",
     "react": "^16.11.0",
     "react-docgen-typescript-loader": "^3.3.0",
     "react-dom": "^16.11.0",
     "ts-loader": "^6.2.1",
     "typescript": "^3.6.4"
+  },
+  "peerDependencies": {
+    "react": "^16.8.0"
   }
 }
