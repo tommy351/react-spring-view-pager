@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ViewPager from "./ViewPager";
+import ViewPager from "../src/ViewPager";
 
 export default {
   component: ViewPager,
