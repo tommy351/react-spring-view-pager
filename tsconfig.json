@@ -7,7 +7,6 @@
     "strict": true,
     "esModuleInterop": true,
     "sourceMap": true,
-    "declaration": true,
     "forceConsistentCasingInFileNames": true,
     "rootDir": "src"
   },

@@ -6,6 +6,7 @@
   "homepage": "https://github.com/tommy351/react-spring-view-pager",
   "scripts": {
     "storybook": "start-storybook",
+    "build-storybook": "build-storybook",
     "lint": "eslint . --ext .js,.ts,.tsx"
   },
   "repository": {
