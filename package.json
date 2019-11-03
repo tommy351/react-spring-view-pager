@@ -38,12 +38,11 @@
     "dist"
   ],
   "dependencies": {
-    "bezier-easing": "^2.1.0",
     "lodash.clamp": "^4.0.3",
     "react-spring": "^8.0.27",
     "react-use-gesture": "^6.0.14",
-    "react-use-measure": "^1.0.4",
-    "tslib": "^1.10.0"
+    "tslib": "^1.10.0",
+    "use-measure": "^0.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",

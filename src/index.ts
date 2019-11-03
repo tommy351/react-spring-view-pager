@@ -1,6 +1,3 @@
-export {
-  default as ViewPager,
-  ChildState,
-  ChildProps,
-  ViewPagerProps
-} from "./ViewPager";
+export { CubeViewPager } from "./CubeViewPager";
+export { FlatViewPager } from "./FlatViewPager";
+export { BaseProps, ChildProps, ChildState } from "./types";

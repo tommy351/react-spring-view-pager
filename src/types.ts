@@ -21,4 +21,5 @@ export interface BaseProps {
   velocityThreshold?: number;
   minMovement?: number;
   movementThreshold?: number;
+  resistance?: boolean;
 }

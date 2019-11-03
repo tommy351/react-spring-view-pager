@@ -2,13 +2,13 @@ import React, {
   FunctionComponent,
   useEffect,
   useState,
-  useRef,
   useCallback,
+  useRef,
   CSSProperties
 } from "react";
 import { animated, useSpring } from "react-spring";
 import { useDrag } from "react-use-gesture";
-import useMeasure, { RectReadOnly } from "react-use-measure";
+import useMeasure, { DOMRectReadOnly } from "use-measure";
 import clamp from "lodash.clamp";
 import { BaseProps, ChildState } from "./types";
 
@@ -16,12 +16,12 @@ export interface GetContainerStyleInput {
   index: number;
   position: number;
   velocity: number;
-  rect: RectReadOnly;
+  rect: DOMRectReadOnly;
 }
 
 export interface GetChildStyleInput {
   index: number;
-  rect: RectReadOnly;
+  rect: DOMRectReadOnly;
 }
 
 export interface ViewPagerCoreProps extends BaseProps {
@@ -39,7 +39,8 @@ export const ViewPagerCore: FunctionComponent<ViewPagerCoreProps> = ({
   minVelocity = 0.01,
   velocityThreshold = 0.5,
   minMovement = 0.05,
-  movementThreshold = 0.5
+  movementThreshold = 0.5,
+  resistance = true
 }) => {
   function isValidIndex(index: number) {
     return index >= 0 && index < pageCount;
@@ -59,7 +60,12 @@ export const ViewPagerCore: FunctionComponent<ViewPagerCoreProps> = ({
   const [props, set] = useSpring(() => getDefaultContainerStyle());
 
   const bind = useDrag(({ movement: [movementX], last, down, velocity }) => {
-    const position = clamp(movementX / rect.width, -1, 1);
+    const canChangeIndex = isValidIndex(nextIndex);
+    const relativeMovement = clamp(movementX / rect.width, -1, 1);
+    const position =
+      !canChangeIndex && resistance
+        ? Math.log(1 + relativeMovement * 0.4)
+        : relativeMovement;
     const absPosition = Math.abs(position);
 
     if (last) {
@@ -68,7 +74,7 @@ export const ViewPagerCore: FunctionComponent<ViewPagerCoreProps> = ({
       const shouldChangeIndex =
         absPosition > movementThreshold || isQuickMovement;
 
-      if (shouldChangeIndex && isValidIndex(nextIndex)) {
+      if (shouldChangeIndex && canChangeIndex) {
         onPageChange(nextIndex);
       } else {
         setNextIndex(index);
