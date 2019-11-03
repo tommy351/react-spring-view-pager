@@ -1,7 +1,14 @@
 module.exports = ({ config }) => {
   config.module.rules.push({
     test: /\.tsx?$/,
-    loader: "ts-loader"
+    use: [
+      {
+        loader: "ts-loader"
+      },
+      {
+        loader: "react-docgen-typescript-loader"
+      }
+    ]
   });
 
   config.resolve.extensions.push(".ts", ".tsx");
