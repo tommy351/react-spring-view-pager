@@ -1,11 +1,17 @@
 import React, { FunctionComponent } from "react";
+import { ChildState } from "../src";
 
 interface PageProps {
   index: number;
+  state: ChildState;
   pageCount: number;
 }
 
-export const Page: FunctionComponent<PageProps> = ({ index, pageCount }) => {
+export const Page: FunctionComponent<PageProps> = ({
+  index,
+  state,
+  pageCount
+}) => {
   return (
     <div
       style={{
@@ -19,6 +25,7 @@ export const Page: FunctionComponent<PageProps> = ({ index, pageCount }) => {
       }}
     >
       <span style={{ fontSize: "50px" }}>{index}</span>
+      <span>{state}</span>
     </div>
   );
 };

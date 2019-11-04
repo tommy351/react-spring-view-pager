@@ -19,7 +19,9 @@ export function simple() {
         onPageChange={setIndex}
         pageCount={pageCount}
       >
-        {({ index }) => <Page index={index} pageCount={pageCount} />}
+        {({ index, state }) => (
+          <Page index={index} pageCount={pageCount} state={state} />
+        )}
       </CubeViewPager>
     </Body>
   );
