@@ -1,0 +1,19 @@
+{
+  "hooks": {
+    "after:bump": ["npm run clean", "npm run build"]
+  },
+  "git": {
+    "requireCleanWorkingDir": true,
+    "requireCommits": true,
+    "commit": true,
+    "commitMessage": "release: ${version}",
+    "tag": true,
+    "tagName": "${version}",
+    "push": true,
+    "pushArgs": "--follow-tags",
+    "pushRepo": "origin"
+  },
+  "npm": {
+    "publish": true
+  }
+}
