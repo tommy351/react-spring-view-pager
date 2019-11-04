@@ -1,6 +1,6 @@
 {
   "name": "react-spring-view-pager",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "View pager implemented with react-spring",
   "main": "dist/cjs",
   "module": "dist/esm",
