@@ -57,7 +57,9 @@ export const ViewPagerCore: FunctionComponent<ViewPagerCoreProps> = ({
   const [nextIndex, setNextIndex] = useState(index);
 
   const [props, set] = useSpring(() => ({
-    x: currentIndex
+    x: currentIndex,
+    // Disable initial animation
+    immediate: true
   }));
 
   const bind = useDrag(
@@ -70,6 +72,7 @@ export const ViewPagerCore: FunctionComponent<ViewPagerCoreProps> = ({
           : relativeMovement;
       const absPosition = Math.abs(position);
 
+      // Set the current index when drag started
       if (first) {
         setCurrentIndex(index);
       }
@@ -105,6 +108,7 @@ export const ViewPagerCore: FunctionComponent<ViewPagerCoreProps> = ({
     }
   );
 
+  // Set props when the index changed
   useEffect(() => {
     set({
       x: index,
@@ -118,6 +122,16 @@ export const ViewPagerCore: FunctionComponent<ViewPagerCoreProps> = ({
     });
   }, [set, index]);
 
+  // Set immediate to true when resized
+  useEffect(() => {
+    set({
+      immediate: true
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rect]);
+
+  // Force update currentIndex when the index changed too fast
   useEffect(() => {
     if (index !== currentIndex && index !== nextIndex) {
       setCurrentIndex(nextIndex);
