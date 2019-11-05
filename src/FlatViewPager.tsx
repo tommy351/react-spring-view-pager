@@ -6,11 +6,11 @@ export const FlatViewPager: FunctionComponent<BaseProps> = props => {
   return (
     <ViewPagerCore
       {...props}
-      getContainerStyle={({ index, position }) => ({
+      getContainerStyle={({ x }) => ({
         width: "100%",
         height: "100%",
         position: "relative",
-        transform: `translateX(${(-index + position) * 100}%)`
+        transform: x.interpolate(x => `translateX(${x * -100}%)`)
       })}
       getChildStyle={({ index }) => ({
         width: "100%",

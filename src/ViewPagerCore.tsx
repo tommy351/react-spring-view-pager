@@ -3,10 +3,9 @@ import React, {
   useEffect,
   useState,
   useRef,
-  CSSProperties,
-  useCallback
+  CSSProperties
 } from "react";
-import { animated, useSpring } from "react-spring";
+import { animated, useSpring, AnimatedValue } from "react-spring";
 import { useDrag } from "react-use-gesture";
 import useMeasure, { DOMRectReadOnly } from "use-measure";
 import clamp from "lodash.clamp";
@@ -16,9 +15,12 @@ function noop() {
   //
 }
 
-export interface GetContainerStyleInput {
-  index: number;
-  position: number;
+interface GetStyleAnimatedValue {
+  x: number;
+}
+
+export interface GetContainerStyleInput
+  extends AnimatedValue<GetStyleAnimatedValue> {
   rect: DOMRectReadOnly;
 }
 
@@ -54,22 +56,9 @@ export const ViewPagerCore: FunctionComponent<ViewPagerCoreProps> = ({
   const [currentIndex, setCurrentIndex] = useState(index);
   const [nextIndex, setNextIndex] = useState(index);
 
-  const getContainerSpringProps = useCallback(
-    (input: Partial<GetContainerStyleInput>) => ({
-      ...getContainerStyle({
-        index: currentIndex,
-        position: 0,
-        rect,
-        ...input
-      }),
-      immediate: false,
-      onStart: noop,
-      onRest: noop
-    }),
-    [getContainerStyle, currentIndex, rect]
-  );
-
-  const [props, set] = useSpring(() => getContainerSpringProps({}));
+  const [props, set] = useSpring(() => ({
+    x: currentIndex
+  }));
 
   const bind = useDrag(
     ({ movement: [movementX], first, last, down, velocity }) => {
@@ -95,9 +84,9 @@ export const ViewPagerCore: FunctionComponent<ViewPagerCoreProps> = ({
           onPageChange(nextIndex);
         } else {
           set({
-            ...getContainerSpringProps({
-              index: currentIndex
-            }),
+            x: currentIndex,
+            immediate: false,
+            onStart: noop,
             onRest() {
               setNextIndex(currentIndex);
             }
@@ -105,14 +94,12 @@ export const ViewPagerCore: FunctionComponent<ViewPagerCoreProps> = ({
         }
       } else if (down && velocity > minVelocity) {
         set({
-          ...getContainerSpringProps({
-            index: currentIndex,
-            position
-          }),
+          x: currentIndex - position,
           immediate: true,
           onStart() {
             setNextIndex(position > 0 ? currentIndex - 1 : currentIndex + 1);
-          }
+          },
+          onRest: noop
         });
       }
     }
@@ -120,7 +107,8 @@ export const ViewPagerCore: FunctionComponent<ViewPagerCoreProps> = ({
 
   useEffect(() => {
     set({
-      ...getContainerSpringProps({ index }),
+      x: index,
+      immediate: false,
       onStart() {
         setNextIndex(index);
       },
@@ -128,7 +116,13 @@ export const ViewPagerCore: FunctionComponent<ViewPagerCoreProps> = ({
         setCurrentIndex(index);
       }
     });
-  }, [set, index, getContainerSpringProps]);
+  }, [set, index]);
+
+  useEffect(() => {
+    if (index !== currentIndex && index !== nextIndex) {
+      setCurrentIndex(nextIndex);
+    }
+  }, [index, currentIndex, nextIndex]);
 
   function getPageState(pageIndex: number) {
     if (pageIndex === currentIndex) {
@@ -139,11 +133,15 @@ export const ViewPagerCore: FunctionComponent<ViewPagerCoreProps> = ({
   }
 
   return (
-    <animated.div {...bind()} ref={ref} style={props}>
+    <animated.div
+      {...bind()}
+      ref={ref}
+      style={getContainerStyle({ ...props, rect })}
+    >
       {[currentIndex - 1, currentIndex, currentIndex + 1]
         .filter(isValidIndex)
         .map(i => (
-          <div key={i} style={getChildStyle({ index: i, rect })}>
+          <div key={i} style={getChildStyle({ rect, index: i })}>
             {children({ index: i, state: getPageState(i) })}
           </div>
         ))}
