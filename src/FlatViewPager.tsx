@@ -1,8 +1,8 @@
-import React, { FunctionComponent } from "react";
+import React from "react";
 import { BaseProps } from "./types";
 import { ViewPagerCore } from "./ViewPagerCore";
 
-export const FlatViewPager: FunctionComponent<BaseProps> = props => {
+export const FlatViewPager = (props: BaseProps) => {
   return (
     <ViewPagerCore
       {...props}
@@ -10,7 +10,7 @@ export const FlatViewPager: FunctionComponent<BaseProps> = props => {
         width: "100%",
         height: "100%",
         position: "relative",
-        transform: x.interpolate(x => `translateX(${x * -100}%)`)
+        transform: x.to(x => `translateX(${x * -100}%)`)
       })}
       getChildStyle={({ index }) => ({
         width: "100%",

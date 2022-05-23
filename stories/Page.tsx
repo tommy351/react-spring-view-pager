@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React from "react";
 import { ChildState } from "../src";
 
 interface PageProps {
@@ -7,11 +7,7 @@ interface PageProps {
   pageCount: number;
 }
 
-export const Page: FunctionComponent<PageProps> = ({
-  index,
-  state,
-  pageCount
-}) => {
+export const Page = ({ index, state, pageCount }: PageProps) => {
   return (
     <div
       style={{
