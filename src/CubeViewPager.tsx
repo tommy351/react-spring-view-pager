@@ -1,10 +1,10 @@
-import React, { FunctionComponent } from "react";
+import React from "react";
 import { BaseProps } from "./types";
 import { ViewPagerCore } from "./ViewPagerCore";
 
 const ANGLE = 90;
 
-export const CubeViewPager: FunctionComponent<BaseProps> = props => {
+export const CubeViewPager = (props: BaseProps) => {
   return (
     <ViewPagerCore
       {...props}
@@ -13,7 +13,7 @@ export const CubeViewPager: FunctionComponent<BaseProps> = props => {
         height: "100%",
         position: "relative",
         transformStyle: "preserve-3d",
-        transform: x.interpolate(
+        transform: x.to(
           x =>
             `perspective(${width * 2}px) translateZ(${width /
               -2}px) rotateY(${x * -ANGLE}deg)`

@@ -1,6 +1,6 @@
-import React, { FunctionComponent } from "react";
+import React, { ReactNode } from "react";
 
-export const Body: FunctionComponent = ({ children }) => {
+export const Body = ({ children }: { children: ReactNode }) => {
   return (
     <div
       style={{

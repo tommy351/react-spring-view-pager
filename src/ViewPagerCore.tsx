@@ -1,13 +1,12 @@
 import React, {
-  FunctionComponent,
   useEffect,
   useState,
-  useRef,
-  CSSProperties
+  CSSProperties,
+  ComponentProps
 } from "react";
-import { animated, useSpring, AnimatedValue } from "react-spring";
-import { useDrag } from "react-use-gesture";
-import useMeasure, { DOMRectReadOnly } from "use-measure";
+import { animated, useSpring, SpringValue } from "@react-spring/web";
+import { useDrag } from "@use-gesture/react";
+import useMeasure, { RectReadOnly } from "react-use-measure";
 import clamp from "lodash.clamp";
 import { BaseProps, ChildState } from "./types";
 
@@ -16,25 +15,26 @@ function noop() {
 }
 
 interface GetStyleAnimatedValue {
-  x: number;
+  x: SpringValue<number>;
 }
 
-export interface GetContainerStyleInput
-  extends AnimatedValue<GetStyleAnimatedValue> {
-  rect: DOMRectReadOnly;
+export interface GetContainerStyleInput extends GetStyleAnimatedValue {
+  rect: RectReadOnly;
 }
 
 export interface GetChildStyleInput {
   index: number;
-  rect: DOMRectReadOnly;
+  rect: RectReadOnly;
 }
 
 export interface ViewPagerCoreProps extends BaseProps {
-  getContainerStyle(input: GetContainerStyleInput): CSSProperties;
+  getContainerStyle(
+    input: GetContainerStyleInput
+  ): ComponentProps<typeof animated.div>["style"];
   getChildStyle(input: GetChildStyleInput): CSSProperties;
 }
 
-export const ViewPagerCore: FunctionComponent<ViewPagerCoreProps> = ({
+export const ViewPagerCore = ({
   index,
   pageCount,
   children,
@@ -46,17 +46,16 @@ export const ViewPagerCore: FunctionComponent<ViewPagerCoreProps> = ({
   minMovement = 0.05,
   movementThreshold = 0.5,
   resistance = true
-}) => {
+}: ViewPagerCoreProps) => {
   function isValidIndex(index: number) {
     return index >= 0 && index < pageCount;
   }
 
-  const ref = useRef<HTMLDivElement>(null);
-  const rect = useMeasure(ref);
+  const [ref, rect] = useMeasure();
   const [currentIndex, setCurrentIndex] = useState(index);
   const [nextIndex, setNextIndex] = useState(index);
 
-  const [props, set] = useSpring(() => ({
+  const [props, api] = useSpring(() => ({
     x: currentIndex,
     // Disable initial animation
     immediate: true
@@ -79,14 +78,14 @@ export const ViewPagerCore: FunctionComponent<ViewPagerCoreProps> = ({
 
       if (last) {
         const isQuickMovement =
-          velocity > velocityThreshold && absPosition > minMovement;
+          velocity[0] > velocityThreshold && absPosition > minMovement;
         const shouldChangeIndex =
           absPosition > movementThreshold || isQuickMovement;
 
         if (shouldChangeIndex && canChangeIndex) {
           onPageChange(nextIndex);
         } else {
-          set({
+          api.start({
             x: currentIndex,
             immediate: false,
             onStart: noop,
@@ -95,8 +94,8 @@ export const ViewPagerCore: FunctionComponent<ViewPagerCoreProps> = ({
             }
           });
         }
-      } else if (down && velocity > minVelocity) {
-        set({
+      } else if (down && velocity[0] > minVelocity) {
+        api.start({
           x: currentIndex - position,
           immediate: true,
           onStart() {
@@ -110,7 +109,7 @@ export const ViewPagerCore: FunctionComponent<ViewPagerCoreProps> = ({
 
   // Set props when the index changed
   useEffect(() => {
-    set({
+    api.start({
       x: index,
       immediate: false,
       onStart() {
@@ -120,11 +119,11 @@ export const ViewPagerCore: FunctionComponent<ViewPagerCoreProps> = ({
         setCurrentIndex(index);
       }
     });
-  }, [set, index]);
+  }, [api, index]);
 
   // Set immediate to true when resized
   useEffect(() => {
-    set({
+    api.start({
       immediate: true
     });
 
@@ -150,7 +149,10 @@ export const ViewPagerCore: FunctionComponent<ViewPagerCoreProps> = ({
     <animated.div
       {...bind()}
       ref={ref}
-      style={getContainerStyle({ ...props, rect })}
+      style={{
+        ...getContainerStyle({ ...props, rect }),
+        touchAction: "pan-y"
+      }}
     >
       {[currentIndex - 1, currentIndex, currentIndex + 1]
         .filter(isValidIndex)
